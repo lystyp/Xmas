@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My first Vue app</title>
+    <!-- Include Vue library，這裡是用dev版本，可以顯示各種warning，另外還有production版本-->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div id='app'>
+        Name : 
+        <input v-model='name'/>
+        <ul id="array-rendering">
+            <li v-for="item, index in message" :key='index'>
+                {{ item.name }} : {{item.msg}}
+            </li>
+        </ul>
+        <input v-model='inputmsg'/><button @click='send'>送出</button>
+        
+    </div>
+
+    <script>
+        let socket = undefined;
+        socket = io();
+        var vue = new Vue({
+            el: "#app",
+            data:{
+                logintext:"未登入",
+                inputmsg:"",
+                name:"Daniel",
+                message:[] 
+            }, 
+            methods: {
+                send() {
+                    if (socket)
+                        socket.emit("send",  {name:vue.name, msg:vue.inputmsg});
+                    vue.inputmsg = ""
+                }
+            }
+        });
+
+        socket.on("connect", function () {
+            console.log("connect")
+        });
+        
+        socket.on("newMsg", function (msg) {
+            console.log("newMsg" + msg)
+            vue.message.push(msg);
+        });
+                        
+       
+
+        
+
+
+    </script>
+</body>
+</html>

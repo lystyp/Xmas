@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/lystyp/Xmas/issues"
   },
-  "homepage": "https://github.com/lystyp/Xmas#readme"
+  "homepage": "https://github.com/lystyp/Xmas#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^4.4.0"
+  }
 }
