@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My first Vue app</title>
+    <title>Xmas gift~</title>
     <!-- Include Vue library，這裡是用dev版本，可以顯示各種warning，另外還有production版本-->
     <script src="https://unpkg.com/vue"></script>
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
     <div id='app'>
-        Name : 
-        <input v-model='name'/>
+        Name : {{name}}
         <ul id="array-rendering">
             <li v-for="item, index in message" :key='index'>
                 {{ item.name }} : {{item.msg}}
@@ -25,9 +24,8 @@
         var vue = new Vue({
             el: "#app",
             data:{
-                logintext:"未登入",
                 inputmsg:"",
-                name:"Daniel",
+                name:"",
                 message:[] 
             }, 
             methods: {
@@ -40,19 +38,16 @@
         });
 
         socket.on("connect", function () {
-            console.log("connect")
+            let uri = window.location.search.substring(1); 
+            let userName = new URLSearchParams(uri).get("name");
+            vue.name = userName;
+            console.log("connect, name = " + userName)
         });
         
         socket.on("newMsg", function (msg) {
             console.log("newMsg" + msg)
             vue.message.push(msg);
         });
-                        
-       
-
-        
-
-
     </script>
 </body>
 </html>

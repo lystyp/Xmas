@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Xmas gift~</title>
+    <!-- Include Vue library，這裡是用dev版本，可以顯示各種warning，另外還有production版本-->
+    <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+    <div id='app'>
+        Name : 
+        <input v-model='name'/><button @click="login">進入遊戲</button>
+    </div>
+
+    <script>
+
+        var vue = new Vue({
+            el: "#app",
+            data:{
+                name:"",
+            }, 
+            methods: {
+                login() {
+                    if (this.name == 'asus1234')
+                        window.location.href='manager';
+                    else if (this.name != "")
+                        window.location.href='user?name=' + this.name;
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>

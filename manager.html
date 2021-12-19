@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Xmas gift~</title>
+    <!-- Include Vue library，這裡是用dev版本，可以顯示各種warning，另外還有production版本-->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div id='app'>
+        Name : {{name}}
+        <form method="post" enctype="multipart/form-data" action="/upload">
+            <input type="file" name="file">
+            <input type="submit" value="Submit">
+        </form>
+        
+    </div>
+
+   
+</body>
+</html>
