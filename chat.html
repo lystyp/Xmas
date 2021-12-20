@@ -8,16 +8,26 @@
 </head>
 <body>
     <div id='app'>
-        <img :src="image_name" alt="">
+        <div><img :src="image_name" alt=""></div>
+        
+        <table class='scorelist' style="width:100px" >
+            <tr v-for="item,key in scoremap" :key='key'>
+                <td class='score'>{{key}}</td>
+                <td class='score'>{{item.score}}</td>
+            </tr>
+        </table>
         <div id="chatbox" >   
-            <p class= 'message phone'  v-for="item, index in message">
-                {{ item }}
+            <p class= 'message phone'  v-for="item, index in message" :key='index'>
+                {{ item }} 
             </p>
         </div>
+
         <div >
             <input class= 'phone inputmsg' v-model='inputmsg' type="text" class="msger-input" id="msg" placeholder="輸入答案~" @keydown="keydown" >
             <button class= 'phone' type="button" id="send" class="msger-send-btn" @click='send'>發送訊息</button>
         </div>
+
+
     </div>
 
     <script>
@@ -29,7 +39,8 @@
                 inputmsg:"",
                 name:"",
                 message:[],
-                image_name:""
+                image_name:"",
+                scoremap:{}
             }, 
             methods: {
                 send() {
@@ -52,6 +63,7 @@
             let userName = new URLSearchParams(uri).get("name");
             vue.name = userName;
             console.log("connect, name = " + userName)
+            socket.emit("joinGame", userName);
         });
         
         socket.on("newMsg", function (msg) {
@@ -61,17 +73,30 @@
             chatbox.scrollTop = chatbox.scrollHeight;
         });
 
-        socket.on("imageMsg", function (image_msg) {
+        socket.on("next_round", function (image_msg) {
             console.log("image_msg" + image_msg)
             vue.image_name = image_msg;
+            vue.message = [];
+        });
+
+        socket.on("userScoreChanged", function (scoremap) {
+            console.log("userScoreChanged")
+            vue.scoremap = scoremap;
+        });
+
+        socket.on("initData", function (data) {
+            console.log("initData : " +  JSON.stringify(data))
+            vue.scoremap = data.score;
+            vue.image_name = data.image;
         });
     </script>
 </body>
 <style> 
     #chatbox {
       box-sizing: content-box;  
-      width: 200px;
+      width: 400px;
       height: 500px;
+      padding-left: 20px;  
       padding-bottom: 20px;  
       border: 3px solid gray;
       overflow:auto;
@@ -83,11 +108,23 @@
     }
 
     .phone {
-        font-size: 40px;
+        font-size: 50px;
     }
 
     .inputmsg {
+        padding-left: 20px;  
         width: 200px;
+    }
+
+    .score {
+      width: 200px;
+      font-size: 50px;
+      border: 1px solid gray;
+    }
+
+    .scorelist {
+        margin-right:0em;
+        float:right ;
     }
 
     </style>

@@ -7,16 +7,22 @@
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <div id='app'>
-        Name : Manager
-        <form method="post" enctype="multipart/form-data" action="/upload">
-            <input type="file" name="file">
-            <input type="submit" value="Submit">
-        </form>
-        <img :src="image_name" alt="">
-        <input v-model='answer_msg'/><button @click='send_answer'>確認</button>
-        <input v-model='image_number'/><button @click='next_round'>下一輪</button>
-        
+    <div id='app' class='phone'>
+        <div><img :src="image_name" alt=""></div>
+        <input class='phone' id="image_name"/><button class='phone' @click='choose_image'>選擇圖片</button>
+        <div>
+            答案 : <input class='phone' v-model='answer_msg'/>
+        </div>
+        <button class='phone' @click='next_round'>開始猜題</button>  
+        <table class='scorelist' style="width:100px" >
+            <tr v-for="item,key in scoremap" :key='key'>
+                <td class='score'>{{key}}</td>
+                <td class='score'>{{item.score}}</td>
+            </tr>
+        </table>
+        <div v-for='user,key in answeredUser' :key="key">
+            {{key}} : {{user}}
+        </div>
     </div>
 
     <script>
@@ -27,20 +33,23 @@
             data:{
                 answer_msg:"",
                 image_name:"",
-                image_number:0
+                scoremap:{},
+                answeredUser:{}
             }, 
             methods: {
-                send_answer() {
-                    if (socket)
-                        socket.emit("send_answer", vue.answer_msg);
-                    vue.answer_msg = ""
+                choose_image() {
+                    vue.image_name = "/image?image_name=" + document.getElementById('image_name').value + ".png";
+                    console.log(vue.image_name );
                 },
                 next_round() {
                     if (socket)
-                        socket.emit("next_round", vue.image_number);
-                    vue.image_number = "0"
+                        socket.emit("next_round", {image:vue.image_name, answer:vue.answer_msg});
                 }
             }
+        });
+
+        socket.on("connect", function () {
+            socket.emit("joinGame");
         });
 
         socket.on("imageMsg", function (image_msg) {
@@ -48,6 +57,38 @@
             vue.image_name = image_msg;
         });
 
+        socket.on("userScoreChanged", function (scoremap) {
+            console.log("userScoreChanged")
+            vue.scoremap = scoremap;
+        });
+
+        socket.on("someoneAnswered", function (answeredUser) {
+            console.log("someoneAnswered : " + JSON.stringify(answeredUser));
+            vue.answeredUser = answeredUser;
+        });
+
+        socket.on("initData", function (data) {
+            console.log("initData : " +  JSON.stringify(data))
+            vue.scoremap = data.score;
+        });
+
     </script>
+
+<style> 
+    .phone {
+        font-size: 50px;
+    }
+    .score {
+      width: 200px;
+      font-size: 50px;
+      border: 1px solid gray;
+    }
+
+    .scorelist {
+        margin-right:0em;
+    }
+    </style>
 </body>
+
+
 </html>
