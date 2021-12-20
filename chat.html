@@ -8,6 +8,7 @@
 </head>
 <body>
     <div id='app'>
+        <img :src="image_name" alt="">
         <div id="chatbox" >   
             <p class= 'message phone'  v-for="item, index in message">
                 {{ item }}
@@ -27,7 +28,8 @@
             data:{
                 inputmsg:"",
                 name:"",
-                message:[] 
+                message:[],
+                image_name:""
             }, 
             methods: {
                 send() {
@@ -57,6 +59,11 @@
             vue.message.push( msg.name + " : " + msg.msg);
             let chatbox = document.getElementById('chatbox');
             chatbox.scrollTop = chatbox.scrollHeight;
+        });
+
+        socket.on("imageMsg", function (image_msg) {
+            console.log("image_msg" + image_msg)
+            vue.image_name = image_msg;
         });
     </script>
 </body>

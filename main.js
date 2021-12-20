@@ -33,6 +33,11 @@ app.get('/manager', (req, res) => {
   res.sendFile( __dirname + '/manager.html');
 });
 
+app.get('/image', (req, res) => {
+  console.log('get image url'); 
+  res.sendFile( __dirname + '/image/' + req.query.image_name);
+});
+
 let clients = [];
 let sendMsg = function(msgInfo) {
   for (let c of clients) {
@@ -43,9 +48,10 @@ let sendMsg = function(msgInfo) {
 io.on('connection', (socket) => {
     console.log('socket connection !'); 
     clients.push(socket);
+
     socket.on("send", (msgInfo) => {
       console.log('send, user = ' + msgInfo.name + ", msg = " + msgInfo.msg);
-      if(msgInfo.msg == "answer") {
+      if(msgInfo.msg == answer) {
         if(rank < RANK_MAX) {
           userMap[msgInfo.name].score = userMap[msgInfo.name].score + reward_points[rank]
         }else {
@@ -56,6 +62,19 @@ io.on('connection', (socket) => {
       }
       console.log("score: " + userMap[msgInfo.name].score)
       sendMsg(msgInfo);
+    });
+
+    socket.on("send_answer", (foreground_answer) => {
+      console.log('send_answer, answer = ' + foreground_answer);
+      answer = foreground_answer
+    });
+
+    socket.on("next_round", (image_number) => {
+      //clear msg and change image
+      console.log('next_round, image_number = ' + image_number);
+      for (let c of clients) {
+        c.emit("imageMsg", "/image?image_name=" + image_number + ".png");
+      }
     });
 });
  

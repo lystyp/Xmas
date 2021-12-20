@@ -8,14 +8,46 @@
 </head>
 <body>
     <div id='app'>
-        Name : {{name}}
+        Name : Manager
         <form method="post" enctype="multipart/form-data" action="/upload">
             <input type="file" name="file">
             <input type="submit" value="Submit">
         </form>
+        <img :src="image_name" alt="">
+        <input v-model='answer_msg'/><button @click='send_answer'>確認</button>
+        <input v-model='image_number'/><button @click='next_round'>下一輪</button>
         
     </div>
 
-   
+    <script>
+        let socket = undefined;
+        socket = io();
+        var vue = new Vue({
+            el: "#app",
+            data:{
+                answer_msg:"",
+                image_name:"",
+                image_number:0
+            }, 
+            methods: {
+                send_answer() {
+                    if (socket)
+                        socket.emit("send_answer", vue.answer_msg);
+                    vue.answer_msg = ""
+                },
+                next_round() {
+                    if (socket)
+                        socket.emit("next_round", vue.image_number);
+                    vue.image_number = "0"
+                }
+            }
+        });
+
+        socket.on("imageMsg", function (image_msg) {
+            console.log("image_msg" + image_msg)
+            vue.image_name = image_msg;
+        });
+
+    </script>
 </body>
 </html>
