@@ -9,13 +9,13 @@
 <body>
     <div id='app'>
         <div id="chatbox" >   
-            <p v-for="item, index in message">
+            <p class= 'message phone'  v-for="item, index in message">
                 {{ item }}
             </p>
         </div>
-        <div class="msger-inputarea">
-            <input v-model='inputmsg' type="text" class="msger-input" id="msg" placeholder="輸入答案~" @keydown="keydown">
-            <button type="button" id="send" class="msger-send-btn" @click='send'>發送訊息</button>
+        <div >
+            <input class= 'phone inputmsg' v-model='inputmsg' type="text" class="msger-input" id="msg" placeholder="輸入答案~" @keydown="keydown" >
+            <button class= 'phone' type="button" id="send" class="msger-send-btn" @click='send'>發送訊息</button>
         </div>
     </div>
 
@@ -55,17 +55,32 @@
         socket.on("newMsg", function (msg) {
             console.log("newMsg : " + msg.name + ", " + msg.msg);
             vue.message.push( msg.name + " : " + msg.msg);
+            let chatbox = document.getElementById('chatbox');
+            chatbox.scrollTop = chatbox.scrollHeight;
         });
     </script>
 </body>
 <style> 
     #chatbox {
       box-sizing: content-box;  
-      width: 300px;
-      height: 100px;
-      padding: 5px;  
+      width: 200px;
+      height: 500px;
+      padding-bottom: 20px;  
       border: 3px solid gray;
       overflow:auto;
+    }
+
+    .message {
+      margin-top: 0em;
+      margin-bottom: 0em;
+    }
+
+    .phone {
+        font-size: 40px;
+    }
+
+    .inputmsg {
+        width: 200px;
     }
 
     </style>

@@ -6,9 +6,9 @@
     <script src="https://unpkg.com/vue"></script>
 </head>
 <body>
-    <div id='app'>
+    <div id='app' class='phone'>
         Name : 
-        <input v-model='name'/><button @click="login">進入遊戲</button>
+        <input v-model='name' class='phone'/><button class='phone' @click="login">進入遊戲</button>
     </div>
 
     <script>
@@ -30,4 +30,10 @@
 
     </script>
 </body>
+<style> 
+    .phone {
+        font-size: 40px;
+    }
+
+    </style>
 </html>
