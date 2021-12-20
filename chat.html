@@ -8,14 +8,15 @@
 </head>
 <body>
     <div id='app'>
-        Name : {{name}}
-        <ul id="array-rendering">
-            <li v-for="item, index in message" :key='index'>
-                {{ item.name }} : {{item.msg}}
-            </li>
-        </ul>
-        <input v-model='inputmsg'/><button @click='send'>送出</button>
-        
+        <div id="chatbox" >   
+            <p v-for="item, index in message">
+                {{ item }}
+            </p>
+        </div>
+        <div class="msger-inputarea">
+            <input v-model='inputmsg' type="text" class="msger-input" id="msg" placeholder="輸入答案~" @keydown="keydown">
+            <button type="button" id="send" class="msger-send-btn" @click='send'>發送訊息</button>
+        </div>
     </div>
 
     <script>
@@ -30,9 +31,16 @@
             }, 
             methods: {
                 send() {
-                    if (socket)
+                    if (socket && vue.inputmsg != "") {
                         socket.emit("send",  {name:vue.name, msg:vue.inputmsg});
-                    vue.inputmsg = ""
+                        vue.inputmsg = ""
+                    }
+                }, 
+                keydown(e) {
+                    if (socket && e.keyCode === 13 && vue.inputmsg !== "") {
+                        socket.emit("send",  {name:vue.name, msg:vue.inputmsg});
+                        vue.inputmsg = ""
+                    }
                 }
             }
         });
@@ -45,9 +53,20 @@
         });
         
         socket.on("newMsg", function (msg) {
-            console.log("newMsg" + msg)
-            vue.message.push(msg);
+            console.log("newMsg : " + msg.name + ", " + msg.msg);
+            vue.message.push( msg.name + " : " + msg.msg);
         });
     </script>
 </body>
+<style> 
+    #chatbox {
+      box-sizing: content-box;  
+      width: 300px;
+      height: 100px;
+      padding: 5px;  
+      border: 3px solid gray;
+      overflow:auto;
+    }
+
+    </style>
 </html>
