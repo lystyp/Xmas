@@ -25,16 +25,6 @@ app.get('/user', (req, res) => {
   res.sendFile( __dirname + '/chat.html');
 });
 
-app.get('/reset', (req, res) => {
-  console.log('reset'); 
-  answer = ""
-  rank = 0
-  userMap = {}
-  currentImage = ""
-  answeredUser = {};
-  res.sendFile( __dirname + '/manager.html');
-});
-
 app.get('/manager', (req, res) => {
   console.log('get manager request'); 
   //TODO: When starting next round remember to reset rank; get answer value 
@@ -147,6 +137,19 @@ io.on('connection', (socket) => {
       console.log('stopTest ');
       for (let c of clients) {
         c.emit("stopTestClient");
+      }
+    });
+
+    socket.on('reset', () => {
+      console.log('reset'); 
+      answer = ""
+      rank = 0
+      userMap = {}
+      stop = false;
+      currentImage = ""
+      answeredUser = {};
+      for (let c of clients) {
+        c.disconnect();
       }
     });
 });
