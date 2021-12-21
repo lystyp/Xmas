@@ -9,6 +9,7 @@ let reward_points = [10,9,8,7,6,5,4,3,2,1]
 let basic_points = 1
 
 var answer = ""
+var stop = false;
 var rank = 0
 var userMap = {}
 var currentImage = ""
@@ -64,7 +65,12 @@ io.on('connection', (socket) => {
 
     socket.on("send", (msgInfo) => {
       console.log('send, user = ' + msgInfo.name + ", msg = " + msgInfo.msg);
-      if(msgInfo.msg == answer) {
+      if (stop) {
+        sendMsg({name:"主持人", msg: msgInfo.name + "!不要再猜了~~"});
+        return;
+      }
+
+      if(msgInfo.msg != "" && msgInfo.msg == answer) {
         if (answeredUser[answer].includes(msgInfo.name) ) {
           msgInfo.msg = "不要洗分數!!!"
         } else {
@@ -86,19 +92,27 @@ io.on('connection', (socket) => {
           userScoreChanged();
         }
       }
-      console.log("score: " + userMap[msgInfo.name].score)
       sendMsg(msgInfo);
     });
 
     socket.on("next_round", (data) => {
       console.log('next_round : ' + JSON.stringify(data));
+      if (Object.keys(answeredUser).includes(data.answer)) {
+        let a = currentImage.split('=');
+        let imagename = a[a.length-1];
+        answeredUser[answer + "-" + imagename ] = answeredUser[answer]
+      
+      }
+
       currentImage = data.image;
       answer = data.answer;
       answeredUser[answer] = [];
       rank = 0;
+      stop = false;
       for (let c of clients) {
         c.emit("next_round", currentImage);
       }
+      sendMsg({name:"主持人", msg:"開始猜題~~~~~"});
     });
 
     socket.on("joinGame", (name) => {
@@ -111,7 +125,28 @@ io.on('connection', (socket) => {
         }
         userScoreChanged();
       }
-      socket.emit("initData", {image:currentImage, score:userMap});
+      socket.emit("initData", {image:currentImage, score:userMap, debug:process.env.DEBUG || true});
+    });
+
+    
+    socket.on("stop", () => {
+      console.log('stop ');
+      stop = true;
+      sendMsg({name:"主持人", msg: "請停止猜題~~~~~"});
+    });
+
+    socket.on("test", () => {
+      console.log('test ');
+      for (let c of clients) {
+        c.emit("testClient", answer);
+      }
+    });
+
+    socket.on("stopTest", () => {
+      console.log('stopTest ');
+      for (let c of clients) {
+        c.emit("stopTestClient");
+      }
     });
 });
  

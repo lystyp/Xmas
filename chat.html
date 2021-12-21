@@ -8,7 +8,7 @@
 </head>
 <body>
     <div id='app'>
-        <div><img :src="image_name" alt=""></div>
+        <div class='landscape'><img class='img':src="image_name" alt=""></div>
         
         <table class='scorelist' style="width:100px" >
             <tr v-for="item,key in scoremap" :key='key'>
@@ -90,6 +90,37 @@
             vue.scoremap = data.score;
             vue.image_name = data.image;
         });
+
+        let testCount = 0;
+        socket.on("testClient", function (ans) {
+            testCount ++;
+            console.log("testClient " + testCount);
+            let str = "";
+            let sleepTime = 0;
+            let next = true;
+            let testCountLocal = testCount;
+            let msgCount = 0;
+            
+            str = "test";
+            let f = function() {
+                console.log("testClient, testCountLocal = " + testCountLocal);
+                if (testCountLocal != testCount)
+                    return;
+                socket.emit("send",  {name:vue.name, msg:str});
+                str = "test" + msgCount;
+                msgCount ++;
+                sleepTime = Math.random() * 2000;
+                if (sleepTime < 200)
+                    str = ans;
+                setTimeout(f, sleepTime);
+            }
+            setTimeout(f, sleepTime);
+        });
+        socket.on("stopTestClient", function () {
+            console.log("stopTestClient")
+            testCount = -1;
+        });
+
     </script>
 </body>
 <style> 
@@ -126,6 +157,14 @@
         margin-right:0em;
         float:right ;
     }
+
+    .img {
+        height: 500px;
+        width: auto;
+        object-fit: 'contain';
+    }
+
+
 
     </style>
 </html>

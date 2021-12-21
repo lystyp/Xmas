@@ -8,12 +8,15 @@
 </head>
 <body>
     <div id='app' class='phone'>
-        <div><img :src="image_name" alt=""></div>
+        <div class='landscape'><img class='img':src="image_name" alt=""></div>
         <input class='phone' id="image_name"/><button class='phone' @click='choose_image'>選擇圖片</button>
         <div>
             答案 : <input class='phone' v-model='answer_msg'/>
         </div>
-        <button class='phone' @click='next_round'>開始猜題</button>  
+        <button class='phone' @click='next_round'>開始猜題</button> 
+        <button class='phone' @click='stop'>停止猜題</button> 
+        <button v-if='debug' class='phone' @click='test'>測試</button>  
+        <button v-if='debug' class='phone' @click='stopTest'>停止測試</button>  
         <table class='scorelist' style="width:100px" >
             <tr v-for="item,key in scoremap" :key='key'>
                 <td class='score'>{{key}}</td>
@@ -22,6 +25,12 @@
         </table>
         <div v-for='user,key in answeredUser' :key="key">
             {{key}} : {{user}}
+        </div>
+        <div id="chatbox" >   
+            <p class= 'message phone'  v-for="item, index in message" :key='index'>
+                {{ item }} 
+            </p>
+            <p class= 'message phone'>---</p>
         </div>
     </div>
 
@@ -34,7 +43,9 @@
                 answer_msg:"",
                 image_name:"",
                 scoremap:{},
-                answeredUser:{}
+                answeredUser:{},
+                message:[],
+                debug : false
             }, 
             methods: {
                 choose_image() {
@@ -44,6 +55,24 @@
                 next_round() {
                     if (socket)
                         socket.emit("next_round", {image:vue.image_name, answer:vue.answer_msg});
+                    vue.answer_msg = "";
+                    vue.image_name = "";
+                    document.getElementById('image_name').value = "";
+                    vue.message = [];
+                },
+                stop() {
+                    if (socket)
+                        socket.emit("stop");
+                },
+
+                test() {
+                    if (socket)
+                        socket.emit("test");
+                },
+
+                stopTest() {
+                    if (socket)
+                        socket.emit("stopTest");
                 }
             }
         });
@@ -70,6 +99,14 @@
         socket.on("initData", function (data) {
             console.log("initData : " +  JSON.stringify(data))
             vue.scoremap = data.score;
+            vue.debug = data.debug;
+        });
+
+        socket.on("newMsg", function (msg) {
+            console.log("newMsg : " + msg.name + ", " + msg.msg);
+            vue.message.push( msg.name + " : " + msg.msg);
+            let chatbox = document.getElementById('chatbox');
+            chatbox.scrollTop = chatbox.scrollHeight;
         });
 
     </script>
@@ -85,6 +122,22 @@
 
     .scorelist {
         margin-right:0em;
+    }
+
+    .img {
+        height: 500px;
+        width: auto;
+        object-fit: 'contain';
+    }
+
+    #chatbox {
+      box-sizing: content-box;  
+      width: 400px;
+      height: 500px;
+      padding-left: 20px;  
+      padding-bottom: 20px;  
+      border: 3px solid gray;
+      overflow:auto;
     }
     </style>
 </body>
