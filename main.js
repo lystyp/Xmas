@@ -116,7 +116,7 @@ io.on('connection', (socket) => {
         userScoreChanged();
       }
       let debug = process.env.DEBUG == "1";
-      socket.emit("initData", {image:currentImage, score:userMap, debug:debug});
+      socket.emit("initData", {image:currentImage, score:userMap, debug:debug, answeredUser:answeredUser});
     });
 
     

@@ -112,6 +112,7 @@
             console.log("initData : " +  JSON.stringify(data))
             vue.scoremap = data.score;
             vue.debug = data.debug;
+            vue.answeredUser = data.answeredUser;
         });
 
         socket.on("newMsg", function (msg) {
