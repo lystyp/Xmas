@@ -91,7 +91,6 @@ io.on('connection', (socket) => {
         let a = currentImage.split('=');
         let imagename = a[a.length-1];
         answeredUser[answer + "-" + imagename ] = answeredUser[answer]
-      
       }
 
       currentImage = data.image;
@@ -100,6 +99,7 @@ io.on('connection', (socket) => {
       rank = 0;
       stop = false;
       for (let c of clients) {
+        c.emit("someoneAnswered", answeredUser);
         c.emit("next_round", currentImage);
       }
       sendMsg({name:"主持人", msg:"開始猜題~~~~~"});
@@ -116,7 +116,7 @@ io.on('connection', (socket) => {
         userScoreChanged();
       }
       let debug = process.env.DEBUG == "1";
-      socket.emit("initData", {image:currentImage, score:userMap, debug});
+      socket.emit("initData", {image:currentImage, score:userMap, debug:debug});
     });
 
     
@@ -151,6 +151,17 @@ io.on('connection', (socket) => {
       for (let c of clients) {
         c.disconnect();
       }
+    });
+
+    socket.on('resetScore', () => {
+      console.log('resetScore');
+      for (let i of Object.values(userMap)) {
+        i.score = 0;
+      }
+      answeredUser = {};
+      answer = ""
+      rank = 0;
+      userScoreChanged();
     });
 });
  
