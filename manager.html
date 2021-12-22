@@ -15,8 +15,6 @@
         </div>
         <button class='phone' @click='next_round'>開始猜題</button> 
         <button class='phone' @click='stop'>停止猜題</button> 
-        <button class='phone' @click='resetScore'>重置分數</button> 
-        <button class='phone' @click='reset'>系統重置</button> 
         <button v-if='debug' class='phone' @click='test'>測試</button>  
         <button v-if='debug' class='phone' @click='stopTest'>停止測試</button>  
         <table class='scorelist' style="width:100px" >
@@ -34,6 +32,9 @@
             </p>
             <p class= 'message phone'>---</p>
         </div>
+
+        <button class='phone system' @click='resetScore'>重置分數</button> 
+        <button class='phone system' @click='reset'>系統重置</button> 
     </div>
 
     <script>
@@ -143,10 +144,14 @@
         object-fit: 'contain';
     }
 
+    .system {
+        margin-top:1000px
+    }
+
     #chatbox {
       box-sizing: content-box;  
       width: 400px;
-      height: 500px;
+      height: 700px;
       padding-left: 20px;  
       padding-bottom: 20px;  
       border: 3px solid gray;
